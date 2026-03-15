@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>騎乘代練計算器 | AdamLight (UID: 178647)</title>
+    <style>
+        body { font-family: "Microsoft JhengHei", sans-serif; padding: 15px; background-color: #f0f2f5; display: flex; justify-content: center; }
+        .card { background: white; padding: 20px; border-radius: 12px; width: 100%; max-width: 380px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h3 { text-align: center; margin-top: 0; color: #333; font-size: 18px; }
+        
+        .lv-container { 
+            display: grid; 
+            grid-template-columns: repeat(5, 1fr); 
+            gap: 6px; 
+            margin-bottom: 12px; 
+        }
+        .lv-btn { 
+            padding: 8px 0; 
+            background: #fdfdfd; 
+            border: 1px solid #ccc; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            text-align: center; 
+            font-size: 12px; 
+            color: #555;
+            transition: all 0.2s;
+        }
+        .lv-btn.active { 
+            background: #28a745; 
+            border-color: #28a745; 
+            color: white; 
+            font-weight: bold; 
+        }
+
+        .input-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 6px; font-size: 14px; font-weight: bold; }
+
+        /* --- 核心修改：縮小輸入框寬度並隱藏箭頭 --- */
+        input[type="number"] { 
+            width: 100px; /* 約 5 位數的寬度 */
+            padding: 10px; 
+            box-sizing: border-box; 
+            border: 1px solid #ddd; 
+            border-radius: 6px; 
+            font-size: 15px;
+            text-align: center; /* 文字置中比較好看 */
+            -moz-appearance: textfield;
+        }
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .result-box { 
+            background: #fff9db; border: 1px dashed #fab005; padding: 12px; border-radius: 6px; text-align: center;
+        }
+        .price { font-size: 24px; color: #e67e22; font-weight: bold; }
+        .detail { font-size: 12px; color: #888; margin-bottom: 5px; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h3>騎乘代練價格試算 | AdamLight (UID: 178647)</h3>
+    
+    <label>當前等級：</label>
+    <div class="lv-container">
+        <div class="lv-btn active" data-exp="0">騎乘LV1</div>
+        <div class="lv-btn" data-exp="225">騎乘LV2</div>
+        <div class="lv-btn" data-exp="900">騎乘LV3</div>
+        <div class="lv-btn" data-exp="2475">騎乘LV4</div>
+        <div class="lv-btn" data-exp="5625">騎乘LV5</div>
+    </div>
+    <div class="lv-container" style="grid-template-columns: repeat(4, 1fr); width: 80%;">
+        <div class="lv-btn" data-exp="10350">騎乘LV6</div>
+        <div class="lv-btn" data-exp="16650">騎乘LV7</div>
+        <div class="lv-btn" data-exp="22950">騎乘LV8</div>
+        <div class="lv-btn" data-exp="30825">騎乘LV9</div>
+    </div>
+
+    <div class="input-group">
+        <label>當前經驗值：</label>
+        <input type="number" id="currentExp" placeholder="0" value="0">
+    </div>
+
+    <div class="result-box">
+        <div class="detail">剩餘總經驗：<span id="remExp">40,275</span></div>
+        <div>預估費用：<span class="price" id="totalPrice">120</span> 楓幣</div>
+    </div>
+</div>
+
+<script>
+    const MAX_EXP = 40275;
+    const MAX_PRICE = 120;
+    let selectedBaseExp = 0;
+
+    const btns = document.querySelectorAll('.lv-btn');
+    const input = document.getElementById('currentExp');
+
+    btns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            btns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            selectedBaseExp = parseInt(this.getAttribute('data-exp'));
+            calculate();
+        });
+    });
+
+    input.addEventListener('input', calculate);
+
+    function calculate() {
+        const extraExp = parseInt(input.value) || 0;
+        let totalCurrent = selectedBaseExp + extraExp;
+        if (totalCurrent > MAX_EXP) totalCurrent = MAX_EXP;
+        const remainingExp = MAX_EXP - totalCurrent;
+        const price = (remainingExp / MAX_EXP) * MAX_PRICE;
+
+        document.getElementById('remExp').innerText = remainingExp.toLocaleString();
+        document.getElementById('totalPrice').innerText = Math.ceil(price);
+    }
+</script>
+
+</body>
+</html>
